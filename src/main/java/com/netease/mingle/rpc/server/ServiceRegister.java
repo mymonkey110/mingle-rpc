@@ -14,22 +14,43 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Michael Jiang on 2016/11/27.
  */
 public class ServiceRegister {
-    private final static Map<Class, List<MethodInvocation>> classInstanceMap = new ConcurrentHashMap<>(8);
-    private final static Map<MethodInvocation, Object> serviceHostMap = new ConcurrentHashMap<>();
+    private Map<Class, List<MethodInvocation>> classMethodMap;
+    private Map<MethodInvocation, Object> serviceHostMap;
+    private Map<String, Class> resolvedClazzMap;
+
+    public ServiceRegister() {
+        this.classMethodMap = new ConcurrentHashMap<>(8);
+        this.serviceHostMap = new ConcurrentHashMap<>(8);
+        this.resolvedClazzMap = new ConcurrentHashMap<>(8);
+    }
 
     public <T> void register(Class<T> serviceClass, T serviceInstance) {
-        if (classInstanceMap.containsKey(serviceClass)) {
+        if (classMethodMap.containsKey(serviceClass)) {
             throw new IllegalStateException("already register class:" + serviceClass.getName());
         }
         List<MethodInvocation> methodInvocations = resolveServiceInterface(serviceClass);
-        classInstanceMap.put(serviceClass, methodInvocations);
+        classMethodMap.put(serviceClass, methodInvocations);
         for (MethodInvocation methodInvocation : methodInvocations) {
             serviceHostMap.put(methodInvocation, serviceInstance);
         }
     }
 
     public Set<Class> getServiceClass() {
-        return classInstanceMap.keySet();
+        return classMethodMap.keySet();
+    }
+
+    public boolean isServiceRegister(MethodInvocation methodInvocation) {
+        String className = methodInvocation.getClassName();
+        if (resolvedClazzMap.containsKey(className)) {
+            return true;
+        }
+        try {
+            Class clazz = Class.forName(className);
+            resolvedClazzMap.put(className, clazz);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     private List<MethodInvocation> resolveServiceInterface(Class<?> serviceInterface) {

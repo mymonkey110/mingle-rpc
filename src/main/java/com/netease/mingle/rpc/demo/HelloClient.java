@@ -12,6 +12,6 @@ public class HelloClient {
 
     public static void main(String[] args) throws MalformedURLException {
         HessianProxyFactory hessianProxyFactory = new HessianProxyFactory();
-        hessianProxyFactory.create(HelloService.class,"http://localhost:")
+        hessianProxyFactory.create(HelloService.class,"http://localhost:");
     }
 }
