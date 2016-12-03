@@ -3,10 +3,7 @@ package com.netease.mingle.rpc.client;
 import com.netease.mingle.rpc.shared.InnerLoggerFactory;
 import com.netease.mingle.rpc.shared.MethodInvocation;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.oio.OioSocketChannel;
@@ -76,13 +73,15 @@ public class RpcClient {
     }
 
     class RpcProxy<T> implements InvocationHandler {
+        private Channel channel;
         private Class<T> service;
 
-        RpcProxy(Class<T> service) {
+        RpcProxy(Class<T> service, Channel channel) {
             if (!service.isInterface()) {
                 throw new IllegalArgumentException("mingle can only proxy interface now");
             }
             this.service = service;
+            this.channel = channel;
         }
 
         @SuppressWarnings("unchecked")
@@ -93,6 +92,10 @@ public class RpcClient {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             MethodInvocation methodInvocation = MethodInvocation.from(method);
+
+            ChannelFuture channelFuture=channel.writeAndFlush(methodInvocation);
+            //todo:need consider
+            channelFuture.await(3*1000);
 
             return null;
         }
