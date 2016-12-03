@@ -7,7 +7,7 @@
     <groupId>com.netease.mingle</groupId>
     <artifactId>mingle-rpc</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <java.version>1.7</java.version>
@@ -16,6 +16,7 @@
         <logback.version>1.1.3</logback.version>
         <jcl.slf4j.version>1.7.12</jcl.slf4j.version>
         <netty.version>4.1.6.Final</netty.version>
+        <hessian.version>4.0.38</hessian.version>
     </properties>
 
     <dependencies>
@@ -24,22 +25,10 @@
             <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
-            <version>4.0.38</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>${hessian.version}</version>
         </dependency>
     </dependencies>
 
