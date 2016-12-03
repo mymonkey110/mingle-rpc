@@ -14,29 +14,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Michael Jiang on 2016/11/27.
  */
 public class ServiceRegister {
-    private Map<Class, List<MethodInvocation>> classMethodMap;
-    private Map<MethodInvocation, Object> serviceHostMap;
+    private Map<Class,Object> serviceInstanceMap;
     private Map<String, Class> resolvedClazzMap;
 
     public ServiceRegister() {
-        this.classMethodMap = new ConcurrentHashMap<>(8);
-        this.serviceHostMap = new ConcurrentHashMap<>(8);
+        this.serviceInstanceMap = new ConcurrentHashMap<>(8);
         this.resolvedClazzMap = new ConcurrentHashMap<>(8);
     }
 
     public <T> void register(Class<T> serviceClass, T serviceInstance) {
-        if (classMethodMap.containsKey(serviceClass)) {
+        if (serviceInstanceMap.containsKey(serviceClass)) {
             throw new IllegalStateException("already register class:" + serviceClass.getName());
         }
-        List<MethodInvocation> methodInvocations = resolveServiceInterface(serviceClass);
-        classMethodMap.put(serviceClass, methodInvocations);
-        for (MethodInvocation methodInvocation : methodInvocations) {
-            serviceHostMap.put(methodInvocation, serviceInstance);
-        }
+        serviceInstanceMap.put(serviceClass, serviceInstance);
     }
 
     public Class getRegisteredClass(String className) {
-        for (Class clazz : classMethodMap.keySet()) {
+        for (Class clazz : serviceInstanceMap.keySet()) {
             if (clazz.getName().equals(className)) {
                 return clazz;
             }
@@ -44,8 +38,12 @@ public class ServiceRegister {
         throw new RuntimeException("not found registered class: " + className);
     }
 
+    public Object getServiceInstance(Class clazz) {
+        return serviceInstanceMap.get(clazz);
+    }
+
     public Set<Class> getServiceClass() {
-        return classMethodMap.keySet();
+        return serviceInstanceMap.keySet();
     }
 
     public boolean isServiceRegistered(MethodInvocation methodInvocation) {

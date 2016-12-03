@@ -20,8 +20,9 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof MethodInvocation) {
             MethodInvocation methodInvocation = (MethodInvocation) msg;
-            String className = methodInvocation.getClassName();
-
+            ServiceInvoker serviceInvoker = ServiceInvoker.getServiceInvoker(methodInvocation);
+            Object retObject = serviceInvoker.invoke();
+            ctx.writeAndFlush(retObject);
         }
         logger.warning("rpc call protocol not qualified");
         ctx.writeAndFlush(new SystemException());

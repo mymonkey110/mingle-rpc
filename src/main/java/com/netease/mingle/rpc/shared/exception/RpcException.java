@@ -25,7 +25,11 @@ public class RpcException extends RuntimeException {
     enum ErrorCode {
         SYS_ERROR(1001,"system error"),
 
-        NETWORK_ERROR(1002,"network error");
+        NETWORK_ERROR(1002,"network error"),
+
+        METHOD_NOT_FOUND(1003,"method not found"),
+
+        METHOD_INVOKE_ERROR(1004,"method invoke error");
 
         private int code;
         private String msg;
