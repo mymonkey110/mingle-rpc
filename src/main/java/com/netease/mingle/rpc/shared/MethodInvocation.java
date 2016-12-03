@@ -10,6 +10,8 @@ import java.util.Arrays;
  */
 public class MethodInvocation implements Serializable {
     private final static String version = "1.0";
+    private static final long serialVersionUID = -8292303732547500854L;
+
     private String className;
     private String methodName;
     private Class<?>[] parameterTypes;
@@ -54,6 +56,13 @@ public class MethodInvocation implements Serializable {
 
     public Object[] getParameters() {
         return parameters;
+    }
+
+    public boolean isSameMethod(MethodInvocation other) {
+        return other != null
+                && this.className.equals(other.className)
+                && this.methodName.equals(other.methodName)
+                && Arrays.equals(this.parameterTypes, other.parameterTypes);
     }
 
     @Override

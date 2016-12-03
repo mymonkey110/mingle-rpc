@@ -35,11 +35,20 @@ public class ServiceRegister {
         }
     }
 
+    public Class getRegisteredClass(String className) {
+        for (Class clazz : classMethodMap.keySet()) {
+            if (clazz.getName().equals(className)) {
+                return clazz;
+            }
+        }
+        throw new RuntimeException("not found registered class: " + className);
+    }
+
     public Set<Class> getServiceClass() {
         return classMethodMap.keySet();
     }
 
-    public boolean isServiceRegister(MethodInvocation methodInvocation) {
+    public boolean isServiceRegistered(MethodInvocation methodInvocation) {
         String className = methodInvocation.getClassName();
         if (resolvedClazzMap.containsKey(className)) {
             return true;
