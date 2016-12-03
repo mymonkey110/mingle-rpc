@@ -12,10 +12,21 @@ public class ServiceAddress {
 
     private ServiceAddress(String ip, int port) {
         if (!isValidPort(port)) {
-            throw new IllegalArgumentException("port:"+port+" is illegal");
+            throw new IllegalArgumentException("port:" + port + " is illegal");
         }
-        this.ip=ip;
+        this.ip = ip;
         this.port = port;
+    }
+
+    public static ServiceAddress parse(String address) {
+        String[] ipAndPort = address.split(":");
+        if (ipAndPort.length == 2) {
+            return new ServiceAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        } else if (ipAndPort.length == 1) {
+            return new ServiceAddress(ipAndPort[0], 80);
+        } else {
+            throw new IllegalArgumentException("address:" + address + " is illegal");
+        }
     }
 
     private static boolean isValidPort(int port) {
@@ -23,6 +34,14 @@ public class ServiceAddress {
     }
 
     public InetSocketAddress toInetSocketAddress() {
-        return new InetSocketAddress(ip,port);
+        return new InetSocketAddress(ip, port);
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceAddress{" +
+                "ip='" + ip + '\'' +
+                ", port=" + port +
+                '}';
     }
 }
