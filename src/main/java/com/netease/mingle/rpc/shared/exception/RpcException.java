@@ -29,7 +29,9 @@ public class RpcException extends RuntimeException {
 
         METHOD_NOT_FOUND(1003,"method not found"),
 
-        METHOD_INVOKE_ERROR(1004,"method invoke error");
+        METHOD_INVOKE_ERROR(1004,"method invoke error"),
+
+        WAIT_TIMEOUT(1005,"method call wait timeout");
 
         private int code;
         private String msg;

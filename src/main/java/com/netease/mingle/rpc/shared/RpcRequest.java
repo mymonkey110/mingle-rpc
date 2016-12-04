@@ -4,6 +4,7 @@ import com.netease.mingle.rpc.shared.util.UUIDUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Rpc Request
@@ -42,5 +43,36 @@ public class RpcRequest implements Serializable {
 
     public void addParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public Class<?>[] getParameterTypes() {
+        return parameterTypes;
+    }
+
+    public Object[] getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "requestId='" + requestId + '\'' +
+                ", className='" + className + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", parameterTypes=" + Arrays.toString(parameterTypes) +
+                ", parameters=" + Arrays.toString(parameters) +
+                '}';
     }
 }
