@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class RpcClient {
     private Map<Class, ServiceAddress> serviceAddressMap = new ConcurrentHashMap<>(8);
-    private Map<ServiceAddress, Boolean> serviceAddressInitializeMap = new ConcurrentHashMap<>(8);
+    private static Map<ServiceAddress, Channel> serviceAddressInitializeMap = new ConcurrentHashMap<>(8);
     private static Logger logger = InnerLoggerFactory.getLogger(RpcClient.class.toString());
 
     @SuppressWarnings("unchecked")
@@ -94,7 +94,14 @@ public class RpcClient {
             MethodInvocation methodInvocation = MethodInvocation.from(method);
 
             ChannelFuture channelFuture=channel.writeAndFlush(methodInvocation);
-            //todo:need consider
+            channelFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+
+                    }
+                }
+            });
             channelFuture.await(3*1000);
 
             return null;
