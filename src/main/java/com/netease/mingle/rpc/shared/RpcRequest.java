@@ -41,8 +41,9 @@ public class RpcRequest implements Serializable {
         return new RpcRequest(className, methodName, parameterTypes);
     }
 
-    public void addParameters(Object[] parameters) {
+    public RpcRequest addParameters(Object[] parameters) {
         this.parameters = parameters;
+        return this;
     }
 
     public String getRequestId() {

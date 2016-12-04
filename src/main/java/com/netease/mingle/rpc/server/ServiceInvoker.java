@@ -1,6 +1,7 @@
 package com.netease.mingle.rpc.server;
 
 import com.netease.mingle.rpc.shared.MethodInvocation;
+import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.exception.MethodNotFoundException;
 import com.netease.mingle.rpc.shared.exception.SystemException;
 
@@ -18,21 +19,21 @@ public class ServiceInvoker {
     private Class<?>[] parameterTypes;
     private Object[] parameters;
 
-    private ServiceInvoker(MethodInvocation methodInvocation) {
+    private ServiceInvoker(RpcRequest rpcRequest) {
         ServiceRegister serviceRegister = ServiceRegisterFactory.getRegister(this.getClass().getClassLoader());
-        if (serviceRegister.isServiceRegistered(methodInvocation)) {
-            this.clazz = serviceRegister.getRegisteredClass(methodInvocation.getClassName());
-            this.methodName = methodInvocation.getMethodName();
+        if (serviceRegister.isServiceRegistered(rpcRequest.getClassName())) {
+            this.clazz = serviceRegister.getRegisteredClass(rpcRequest.getClassName());
+            this.methodName = rpcRequest.getMethodName();
             this.instance = serviceRegister.getServiceInstance(clazz);
-            this.parameterTypes = methodInvocation.getParameterTypes();
-            this.parameters = methodInvocation.getParameters();
+            this.parameterTypes = rpcRequest.getParameterTypes();
+            this.parameters = rpcRequest.getParameters();
         } else {
             throw new RuntimeException("method is not registered!");
         }
     }
 
-    public static ServiceInvoker getServiceInvoker(MethodInvocation methodInvocation) {
-        return new ServiceInvoker(methodInvocation);
+    public static ServiceInvoker getServiceInvoker(RpcRequest rpcRequest) {
+        return new ServiceInvoker(rpcRequest);
     }
 
     @SuppressWarnings("unchecked")

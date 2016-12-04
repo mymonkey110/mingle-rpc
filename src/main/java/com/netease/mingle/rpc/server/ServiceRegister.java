@@ -46,8 +46,7 @@ public class ServiceRegister {
         return serviceInstanceMap.keySet();
     }
 
-    public boolean isServiceRegistered(MethodInvocation methodInvocation) {
-        String className = methodInvocation.getClassName();
+    public boolean isServiceRegistered(String className) {
         if (resolvedClazzMap.containsKey(className)) {
             return true;
         }

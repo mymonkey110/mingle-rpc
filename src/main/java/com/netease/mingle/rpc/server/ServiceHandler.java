@@ -2,6 +2,7 @@ package com.netease.mingle.rpc.server;
 
 import com.netease.mingle.rpc.shared.InnerLoggerFactory;
 import com.netease.mingle.rpc.shared.MethodInvocation;
+import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.exception.SystemException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -18,8 +19,8 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof MethodInvocation) {
-            MethodInvocation methodInvocation = (MethodInvocation) msg;
+        if (msg instanceof RpcRequest) {
+            RpcRequest methodInvocation = (RpcRequest) msg;
             ServiceInvoker serviceInvoker = ServiceInvoker.getServiceInvoker(methodInvocation);
             Object retObject = serviceInvoker.invoke();
             ctx.writeAndFlush(retObject);

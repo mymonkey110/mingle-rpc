@@ -1,14 +1,12 @@
 package com.netease.mingle.rpc.client;
 
 import com.netease.mingle.rpc.shared.InnerLoggerFactory;
-import com.netease.mingle.rpc.shared.MethodInvocation;
+import com.netease.mingle.rpc.shared.RpcRequest;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.channel.socket.oio.OioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
@@ -51,7 +49,7 @@ public class RpcClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
-                            pipeline.addLast(new ClientHandler());
+                            pipeline.addLast("clientHandler", new ClientHandler(clazz, serviceAddress));
                             pipeline.addLast(new ObjectEncoder());
                             ChannelManager.registerClassChannel(clazz, ch);
                         }
@@ -78,21 +76,12 @@ public class RpcClient {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            MethodInvocation methodInvocation = MethodInvocation.from(method);
+            RpcRequest rpcRequest = RpcRequest.from(method).addParameters(args);
 
             Channel channel = ChannelManager.getClassChannel(service);
-            ChannelFuture channelFuture = channel.writeAndFlush(methodInvocation);
-            channelFuture.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-
-                    }
-                }
-            });
-            channelFuture.await(3 * 1000);
-
-            return null;
+            ClientHandler clientHandler = (ClientHandler) channel.pipeline().get("clientHandler");
+            ServiceCallContext serviceCallContext = clientHandler.sendRequest(rpcRequest);
+            return serviceCallContext.get();
         }
     }
 
