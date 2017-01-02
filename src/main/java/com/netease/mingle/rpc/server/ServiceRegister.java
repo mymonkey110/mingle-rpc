@@ -18,8 +18,8 @@ public class ServiceRegister {
     private Map<String, Class> resolvedClazzMap;
 
     public ServiceRegister() {
-        this.serviceInstanceMap = new ConcurrentHashMap<>(8);
-        this.resolvedClazzMap = new ConcurrentHashMap<>(8);
+        this.serviceInstanceMap = new ConcurrentHashMap<Class, Object>(8);
+        this.resolvedClazzMap = new ConcurrentHashMap<String ,Class>(8);
     }
 
     public <T> void register(Class<T> serviceClass, T serviceInstance) {
@@ -64,7 +64,7 @@ public class ServiceRegister {
             throw new IllegalArgumentException("register service " + serviceInterface.getName() + " is not interface");
         }
         Method[] methods = serviceInterface.getDeclaredMethods();
-        List<MethodInvocation> methodInvocations = new ArrayList<>();
+        List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
         for (Method method : methods) {
             MethodInvocation methodInvocation = MethodInvocation.from(method);
             methodInvocations.add(methodInvocation);

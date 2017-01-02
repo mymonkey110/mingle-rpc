@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * Created by Michael Jiang on 2016/12/2.
  */
 public class RpcClient {
-    private static Map<Class, ServiceAddress> serviceCallContextMap = new ConcurrentHashMap<>(8);
+    private static Map<Class, ServiceAddress> serviceCallContextMap = new ConcurrentHashMap<Class, ServiceAddress>(8);
     private static Logger logger = InnerLoggerFactory.getLogger(RpcClient.class.toString());
 
     @SuppressWarnings("unchecked")

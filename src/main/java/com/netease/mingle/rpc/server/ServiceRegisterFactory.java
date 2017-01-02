@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Michael Jiang on 16-12-2.
  */
 public class ServiceRegisterFactory {
-    private static Map<ClassLoader,ServiceRegister> serviceRegisterMap = new ConcurrentHashMap<>();
+    private static Map<ClassLoader,ServiceRegister> serviceRegisterMap = new ConcurrentHashMap<ClassLoader, ServiceRegister>();
 
     public static ServiceRegister getRegister(ClassLoader classLoader) {
         if (classLoader == null) {

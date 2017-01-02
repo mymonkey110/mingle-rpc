@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Michael Jiang on 2016/12/4.
  */
 public class ChannelManager {
-    private static Map<Class, Channel> proxyClassChannelMap = new ConcurrentHashMap<>(8);
+    private static Map<Class, Channel> proxyClassChannelMap = new ConcurrentHashMap<Class, Channel>(8);
 
     public static void registerClassChannel(Class clazz, Channel channel) {
         if (!proxyClassChannelMap.containsKey(clazz)) {

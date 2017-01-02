@@ -18,7 +18,7 @@ public class ClientHandler extends SimpleChannelInboundHandler {
 
     private Class serviceInterface;
     private ServiceAddress serviceAddress;
-    private Map<String, ServiceCallContext> callContextMap = new ConcurrentHashMap<>(8);
+    private Map<String, ServiceCallContext> callContextMap = new ConcurrentHashMap<String, ServiceCallContext>(8);
 
     private static Logger logger = InnerLoggerFactory.getLogger(ClientHandler.class.toString());
 

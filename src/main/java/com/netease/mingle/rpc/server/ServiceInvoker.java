@@ -38,14 +38,13 @@ public class ServiceInvoker {
 
     @SuppressWarnings("unchecked")
     public Object invoke() {
-        Method[] methods = clazz.getDeclaredMethods();
         try {
             Method method = clazz.getMethod(methodName, parameterTypes);
             return method.invoke(instance, parameters);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             return new MethodNotFoundException();
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (Exception e) {
             return new SystemException();
         }
     }
