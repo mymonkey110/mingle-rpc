@@ -1,7 +1,7 @@
 package com.netease.mingle.rpc.client;
 
+import com.google.common.collect.Sets;
 import com.netease.mingle.rpc.shared.InnerLoggerFactory;
-import com.netease.mingle.rpc.shared.RpcRequest;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -10,79 +10,76 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+
 
 /**
  * Rpc Client
  * Created by Michael Jiang on 2016/12/2.
  */
 public class RpcClient {
-    private static Map<Class, ServiceAddress> serviceCallContextMap = new ConcurrentHashMap<Class, ServiceAddress>(8);
-    private static Logger logger = InnerLoggerFactory.getLogger(RpcClient.class.toString());
+    private Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup());
+    private Map<Class, ServiceAddress> serviceAddressMap = new ConcurrentHashMap<Class, ServiceAddress>(8);
+    private Map<ServiceAddress, Channel> serviceAddressChannelMap = new ConcurrentHashMap<>(8);
+    private static Logger logger = LoggerFactory.getLogger(RpcClient.class.toString());
+
+    private static RpcClient instance = new RpcClient();
+
+    private RpcClient() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static RpcClient getInstance() {
+        return instance;
+    }
 
     @SuppressWarnings("unchecked")
-    public static synchronized <T> T proxy(Class<T> serviceInterface, String address) {
-        if (!serviceCallContextMap.containsKey(serviceInterface)) {
+    public synchronized <T> T refer(Class<T> serviceInterface, String address) {
+        if (!serviceAddressMap.containsKey(serviceInterface)) {
             ServiceAddress serviceAddress = ServiceAddress.parse(address);
-            serviceCallContextMap.put(serviceInterface, serviceAddress);
-            initializeServiceChannel(serviceInterface, serviceAddress);
+            serviceAddressMap.put(serviceInterface, serviceAddress);
             return (T) new RpcProxy(serviceInterface).getProxyObject();
         } else {
-            throw new IllegalArgumentException("already proxy service:" + serviceInterface.getName());
+            throw new IllegalArgumentException("already refer service:" + serviceInterface.getName());
         }
     }
 
-    private static Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup());
-
-
-    private static synchronized void initializeServiceChannel(final Class clazz, final ServiceAddress serviceAddress) {
-        if (!ChannelManager.isClassChannelRegistered(clazz)) {
+    public void init() {
+        Set<ServiceAddress> serviceAddresses = Sets.newHashSet(serviceAddressMap.values());
+        for (final ServiceAddress serviceAddress : serviceAddresses) {
             bootstrap.channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
-                            pipeline.addLast("clientHandler", new ClientHandler(clazz, serviceAddress));
+                            pipeline.addLast(ClientHandler.getHandler());
                             pipeline.addLast(new ObjectEncoder());
-                            ChannelManager.registerClassChannel(clazz, ch);
                         }
                     });
 
-            bootstrap.connect(serviceAddress.toInetSocketAddress()).awaitUninterruptibly(3 * 1000);
+            bootstrap.connect(serviceAddress.toInetSocketAddress()).awaitUninterruptibly().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        logger.info("mingle client connected to {}.", serviceAddress);
+                        serviceAddressChannelMap.put(serviceAddress, future.channel());
+                    } else {
+                        logger.error("mingle client connected to {} failed.", serviceAddress);
+                    }
+                }
+            });
+
         }
     }
 
-    static class RpcProxy<T> implements InvocationHandler {
-        private Class<T> service;
-
-        RpcProxy(Class<T> service) {
-            if (!service.isInterface()) {
-                throw new IllegalArgumentException("mingle can only proxy interface now");
-            }
-            this.service = service;
-        }
-
-        @SuppressWarnings("unchecked")
-        T getProxyObject() {
-            return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{service}, this);
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            RpcRequest rpcRequest = RpcRequest.from(method).addParameters(args);
-
-            Channel channel = ChannelManager.getClassChannel(service);
-            ClientHandler clientHandler = (ClientHandler) channel.pipeline().get("clientHandler");
-            ServiceCallContext serviceCallContext = clientHandler.sendRequest(rpcRequest);
-            return serviceCallContext.get();
-        }
+    public Channel getServiceAddressBindedChannel(ServiceAddress serviceAddress) {
+        return serviceAddressChannelMap.get(serviceAddress);
     }
 
 }
