@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <properties>
-        <project.logDir>D:/log/mingle</project.logDir>
-    </properties>
+    <property name="project.logDir" value="D:/log/mingle" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

@@ -17,9 +17,15 @@ public class ServiceRegister {
     private Map<Class,Object> serviceInstanceMap;
     private Map<String, Class> resolvedClazzMap;
 
-    public ServiceRegister() {
-        this.serviceInstanceMap = new ConcurrentHashMap<Class, Object>(8);
-        this.resolvedClazzMap = new ConcurrentHashMap<String ,Class>(8);
+    private ServiceRegister() {
+        this.serviceInstanceMap = new ConcurrentHashMap<>(8);
+        this.resolvedClazzMap = new ConcurrentHashMap<>(8);
+    }
+
+    private static ServiceRegister instance = new ServiceRegister();
+
+    public static ServiceRegister getInstance() {
+        return instance;
     }
 
     public <T> void register(Class<T> serviceClass, T serviceInstance) {

@@ -50,9 +50,4 @@ public class RpcServer {
             group.shutdownGracefully();
         }
     }
-
-    public static void main(String[] args) {
-        RpcServer rpcServer = new RpcServer(1616);
-        rpcServer.start();
-    }
 }

@@ -18,7 +18,7 @@ public class ServiceInvoker {
     private Object[] parameters;
 
     private ServiceInvoker(RpcRequest rpcRequest) {
-        ServiceRegister serviceRegister = ServiceRegisterFactory.getRegister(this.getClass().getClassLoader());
+        ServiceRegister serviceRegister = ServiceRegister.getInstance();
         if (serviceRegister.isServiceRegistered(rpcRequest.getClassName())) {
             this.clazz = serviceRegister.getRegisteredClass(rpcRequest.getClassName());
             this.methodName = rpcRequest.getMethodName();
