@@ -1,11 +1,9 @@
 package com.netease.mingle.rpc.server;
 
-import com.netease.mingle.rpc.shared.MethodInvocation;
 import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.exception.MethodNotFoundException;
 import com.netease.mingle.rpc.shared.exception.SystemException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**

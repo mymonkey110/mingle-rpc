@@ -23,6 +23,9 @@ public class ServiceRegister {
     }
 
     public <T> void register(Class<T> serviceClass, T serviceInstance) {
+        if (!serviceClass.isInterface()) {
+            throw new IllegalArgumentException("mingle only support interface now");
+        }
         if (serviceInstanceMap.containsKey(serviceClass)) {
             throw new IllegalStateException("already register class:" + serviceClass.getName());
         }

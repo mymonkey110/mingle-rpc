@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <properties>
+        <project.logDir>D:/log/mingle</project.logDir>
+    </properties>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${project.logDir}/mingle.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${project.logDir}/mingle.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>50MB</MaxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="errorFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${project.logDir}/error.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${project.logDir}/error.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.netease.mingle.rpc" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="errorFile"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="errorFile"/>
+    </root>
+
+</configuration>
