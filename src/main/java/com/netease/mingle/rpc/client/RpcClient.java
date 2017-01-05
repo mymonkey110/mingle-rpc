@@ -31,7 +31,6 @@ public class RpcClient {
     private static RpcClient instance = new RpcClient();
 
     private RpcClient() {
-        throw new UnsupportedOperationException();
     }
 
     public static RpcClient getInstance() {
@@ -43,7 +42,7 @@ public class RpcClient {
         if (!serviceAddressMap.containsKey(serviceInterface)) {
             ServiceAddress serviceAddress = ServiceAddress.parse(address);
             serviceAddressMap.put(serviceInterface, serviceAddress);
-            return (T) new RpcProxy(serviceInterface).getProxyObject();
+            return (T) new RpcProxy(serviceInterface, serviceAddress).getProxyObject();
         } else {
             throw new IllegalArgumentException("already refer service:" + serviceInterface.getName());
         }
@@ -61,9 +60,8 @@ public class RpcClient {
                             pipeline.addLast(ClientHandler.getHandler());
                             pipeline.addLast(new ObjectEncoder());
                         }
-                    });
-
-            bootstrap.connect(serviceAddress.toInetSocketAddress()).awaitUninterruptibly().addListener(new ChannelFutureListener() {
+                    })
+                    .connect(serviceAddress.toInetSocketAddress()).syncUninterruptibly().addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {

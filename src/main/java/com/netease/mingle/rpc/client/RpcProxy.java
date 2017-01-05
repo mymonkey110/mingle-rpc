@@ -2,6 +2,8 @@ package com.netease.mingle.rpc.client;
 
 import com.netease.mingle.rpc.shared.RpcRequest;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -14,6 +16,8 @@ import java.lang.reflect.Proxy;
 class RpcProxy<T> implements InvocationHandler {
     private Class<T> service;
     private ServiceAddress address;
+
+    private static Logger logger = LoggerFactory.getLogger(RpcProxy.class);
 
     RpcProxy(Class<T> service, ServiceAddress address) {
         if (!service.isInterface()) {
@@ -34,10 +38,12 @@ class RpcProxy<T> implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         RpcRequest rpcRequest = RpcRequest.from(method).addParameters(args);
+        logger.info("sending rpc request:{}.", rpcRequest);
 
         Channel channel = RpcClient.getInstance().getServiceAddressBindedChannel(address);
         ClientHandler clientHandler = channel.pipeline().get(ClientHandler.class);
         ServiceCallContext serviceCallContext = clientHandler.sendRequest(rpcRequest);
+        channel.writeAndFlush(rpcRequest);
         return serviceCallContext.get();
     }
 }

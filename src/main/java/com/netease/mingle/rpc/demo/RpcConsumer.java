@@ -9,7 +9,9 @@ import com.netease.mingle.rpc.client.RpcClient;
 public class RpcConsumer {
 
     public static void main(String[] args) {
-        HelloService helloService = RpcClient.refer(HelloService.class, "localhost:8181");
+        RpcClient rpcClient = RpcClient.getInstance();
+        HelloService helloService = rpcClient.refer(HelloService.class, "localhost:6666");
+        rpcClient.init();
         System.out.println(helloService.sayHi("michael"));
     }
 }

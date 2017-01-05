@@ -26,7 +26,6 @@ public class ClientHandler extends SimpleChannelInboundHandler {
     private static ClientHandler instance = new ClientHandler();
 
     private ClientHandler() {
-        throw new UnsupportedOperationException();
     }
 
     public static ClientHandler getHandler() {
