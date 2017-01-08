@@ -37,13 +37,35 @@ class RpcProxy<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (isNotProxyableMethod(method)) {
+            logger.debug("method:{} is not proxyable, invoke local method.");
+            return method.invoke(proxy, args);
+        }
+
         RpcRequest rpcRequest = RpcRequest.from(method).addParameters(args);
         logger.info("sending rpc request:{}.", rpcRequest);
 
-        Channel channel = RpcClient.getInstance().getServiceAddressBindedChannel(address);
+        Channel channel = RpcClient.getInstance().getServiceAddressBindChannel(address);
         ClientHandler clientHandler = channel.pipeline().get(ClientHandler.class);
         ServiceCallContext serviceCallContext = clientHandler.sendRequest(rpcRequest);
         channel.writeAndFlush(rpcRequest);
         return serviceCallContext.get();
+    }
+
+    private boolean isNotProxyableMethod(Method method) {
+        if (method.getDeclaringClass().equals(Object.class)) {
+            return true;
+        }
+        String methodName = method.getName();
+        if (methodName.equals("toString") && method.getParameterTypes().length == 0) {
+            return true;
+        }
+        if (methodName.equals("hashCode") && method.getParameterTypes().length == 0) {
+            return true;
+        }
+        if (methodName.equals("equals") && method.getParameterTypes().length == 1) {
+            return true;
+        }
+        return false;
     }
 }

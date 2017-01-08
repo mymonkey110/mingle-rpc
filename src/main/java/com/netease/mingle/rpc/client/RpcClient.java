@@ -76,7 +76,7 @@ public class RpcClient {
         }
     }
 
-    public Channel getServiceAddressBindedChannel(ServiceAddress serviceAddress) {
+    public Channel getServiceAddressBindChannel(ServiceAddress serviceAddress) {
         return serviceAddressChannelMap.get(serviceAddress);
     }
 

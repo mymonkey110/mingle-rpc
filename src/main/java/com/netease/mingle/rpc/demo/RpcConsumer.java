@@ -10,7 +10,7 @@ public class RpcConsumer {
 
     public static void main(String[] args) {
         RpcClient rpcClient = RpcClient.getInstance();
-        HelloService helloService = rpcClient.refer(HelloService.class, "localhost:6666");
+        HelloService helloService = rpcClient.refer(HelloService.class, "192.168.0.4:6666");
         rpcClient.init();
         System.out.println(helloService.sayHi("michael"));
     }
