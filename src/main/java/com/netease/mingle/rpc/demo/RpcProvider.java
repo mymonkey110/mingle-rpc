@@ -12,7 +12,7 @@ public class RpcProvider {
         ServiceRegister serviceRegister = ServiceRegister.getInstance();
         HelloService helloService = new HelloServiceImpl();
         serviceRegister.register(HelloService.class,helloService);
-        RpcServer rpcServer = new RpcServer(6666);
+        RpcServer rpcServer = new RpcServer(9999);
         rpcServer.start();
     }
 }

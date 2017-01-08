@@ -57,7 +57,7 @@ public class RpcClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
-                            pipeline.addLast(ClientHandler.getHandler());
+                            pipeline.addLast(new ClientHandler());
                             pipeline.addLast(new ObjectEncoder());
                         }
                     })

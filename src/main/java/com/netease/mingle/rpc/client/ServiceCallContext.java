@@ -27,7 +27,7 @@ public class ServiceCallContext {
     public RpcResponse get() throws RpcException, InterruptedException {
         try {
             locker.lock();
-            done.await(3, TimeUnit.SECONDS);
+            done.await(10, TimeUnit.SECONDS);
             if (response != null) {
                 return response;
             } else {

@@ -1,13 +1,11 @@
 package com.netease.mingle.rpc.server;
 
-import com.netease.mingle.rpc.shared.InnerLoggerFactory;
-import com.netease.mingle.rpc.shared.MethodInvocation;
 import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.exception.SystemException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -15,17 +13,20 @@ import java.util.logging.Logger;
  * Created by Michael Jiang on 2016/11/27.
  */
 public class ServiceHandler extends ChannelInboundHandlerAdapter {
-    private static Logger logger = InnerLoggerFactory.getLogger(ServiceHandler.class.toString());
+    private static Logger logger = LoggerFactory.getLogger(ServiceHandler.class.toString());
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RpcRequest) {
+            logger.info("recv rpc request:{}.", msg);
             RpcRequest methodInvocation = (RpcRequest) msg;
             ServiceInvoker serviceInvoker = ServiceInvoker.getServiceInvoker(methodInvocation);
             Object retObject = serviceInvoker.invoke();
-            ctx.writeAndFlush(retObject);
+            logger.info("return object:{}.", retObject);
+            //FIXME: wrap into RpcResponse
+            ctx.channel().writeAndFlush("hi,michael");
         } else {
-            logger.warning("rpc call protocol not qualified");
+            logger.warn("rpc call protocol not qualified");
             ctx.writeAndFlush(new SystemException());
         }
     }
