@@ -1,3 +1,3 @@
 #mingle-rpc
 
-一个轻量级的JAVA RPC框架
+A lightweight rpc framework for Java

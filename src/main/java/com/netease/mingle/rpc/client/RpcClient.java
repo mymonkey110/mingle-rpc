@@ -1,7 +1,6 @@
 package com.netease.mingle.rpc.client;
 
 import com.google.common.collect.Sets;
-import com.netease.mingle.rpc.shared.InnerLoggerFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
