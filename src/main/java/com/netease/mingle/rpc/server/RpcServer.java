@@ -16,6 +16,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  * RPC Server Created by Michael Jiang on 2016/11/27.
  */
 public class RpcServer {
+    private static final int BACKLOG_NUM = 128;
     private int servicePort;
 
     public RpcServer(int servicePort) {
@@ -35,7 +36,7 @@ public class RpcServer {
                         pipeline.addLast(new ServiceHandler());
                         pipeline.addLast(new ObjectEncoder());
                     }
-                }).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
+                }).option(ChannelOption.SO_BACKLOG, BACKLOG_NUM).childOption(ChannelOption.SO_KEEPALIVE, true);
 
         try {
             ChannelFuture future = bootstrap.bind().sync();

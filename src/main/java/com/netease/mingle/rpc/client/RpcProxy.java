@@ -23,7 +23,7 @@ class RpcProxy<T> implements InvocationHandler {
             throw new IllegalArgumentException("mingle can only refer interface now");
         }
         if (address == null) {
-            throw new NullPointerException("service remote address can't be null");
+            throw new IllegalArgumentException("service remote address can't be null");
         }
         this.service = service;
         this.address = address;
