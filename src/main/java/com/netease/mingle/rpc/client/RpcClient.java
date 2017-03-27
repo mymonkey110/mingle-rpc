@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RpcClient {
     private Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup());
-    private Map<Class, ServiceAddress> serviceAddressMap = new ConcurrentHashMap<Class, ServiceAddress>(8);
+    private Map<Class, ServiceAddress> serviceAddressMap = new ConcurrentHashMap<>(8);
     private Map<ServiceAddress, Channel> serviceAddressChannelMap = new ConcurrentHashMap<>(8);
     private static Logger logger = LoggerFactory.getLogger(RpcClient.class.toString());
 
