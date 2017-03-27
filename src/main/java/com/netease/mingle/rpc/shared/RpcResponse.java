@@ -5,10 +5,9 @@ import com.netease.mingle.rpc.shared.exception.RpcException;
 import java.io.Serializable;
 
 /**
- * Rpc Response
- * Created by Michael Jiang on 2016/12/4.
+ * Rpc Response Created by Michael Jiang on 2016/12/4.
  */
-public class RpcResponse implements Serializable{
+public class RpcResponse implements Serializable {
     private static final long serialVersionUID = 6992447826073365028L;
 
     private String requestId;
@@ -47,6 +46,14 @@ public class RpcResponse implements Serializable{
         return normalResult != null;
     }
 
+    public boolean isUserThrowable() {
+        return exceptionResult != null;
+    }
+
+    public boolean isRpcException() {
+        return rpcException != null;
+    }
+
     public String getRequestId() {
         return requestId;
     }
@@ -65,11 +72,7 @@ public class RpcResponse implements Serializable{
 
     @Override
     public String toString() {
-        return "RpcResponse{" +
-                "requestId='" + requestId + '\'' +
-                ", normalResult=" + normalResult +
-                ", exceptionResult=" + exceptionResult +
-                ", rpcException=" + rpcException +
-                '}';
+        return "RpcResponse{" + "requestId='" + requestId + '\'' + ", normalResult=" + normalResult
+                + ", exceptionResult=" + exceptionResult + ", rpcException=" + rpcException + '}';
     }
 }

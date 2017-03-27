@@ -21,15 +21,6 @@ public class ClientHandler extends SimpleChannelInboundHandler {
 
     private static Logger logger = LoggerFactory.getLogger(ClientHandler.class.toString());
 
-    /*private static ClientHandler instance = new ClientHandler();
-
-    private ClientHandler() {
-    }
-
-    public static ClientHandler getHandler() {
-        return instance;
-    }*/
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RpcResponse) {

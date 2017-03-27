@@ -1,6 +1,7 @@
 package com.netease.mingle.rpc.client;
 
 import com.netease.mingle.rpc.shared.RpcRequest;
+import com.netease.mingle.rpc.shared.RpcResponse;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,14 +11,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * Rpc Proxy
- * Created by jiangwenkang on 2017/1/4.
+ * Rpc Proxy Created by jiangwenkang on 2017/1/4.
  */
 class RpcProxy<T> implements InvocationHandler {
+    private static Logger logger = LoggerFactory.getLogger(RpcProxy.class);
     private Class<T> service;
     private ServiceAddress address;
-
-    private static Logger logger = LoggerFactory.getLogger(RpcProxy.class);
 
     RpcProxy(Class<T> service, ServiceAddress address) {
         if (!service.isInterface()) {
@@ -32,7 +31,7 @@ class RpcProxy<T> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     T getProxyObject() {
-        return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{service}, this);
+        return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { service }, this);
     }
 
     @Override
@@ -49,7 +48,14 @@ class RpcProxy<T> implements InvocationHandler {
         ClientHandler clientHandler = channel.pipeline().get(ClientHandler.class);
         ServiceCallContext serviceCallContext = clientHandler.sendRequest(rpcRequest);
         channel.writeAndFlush(rpcRequest);
-        return serviceCallContext.get();
+        RpcResponse rpcResponse = serviceCallContext.get();
+        if (rpcResponse.isNormalReturn()) {
+            return rpcResponse.getNormalResult();
+        } else if (rpcResponse.isUserThrowable()) {
+            throw rpcResponse.getExceptionResult();
+        } else {
+            throw rpcResponse.getRpcException();
+        }
     }
 
     private boolean isNotProxyableMethod(Method method) {

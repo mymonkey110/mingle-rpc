@@ -13,8 +13,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
 /**
- * RPC Server
- * Created by Michael Jiang on 2016/11/27.
+ * RPC Server Created by Michael Jiang on 2016/11/27.
  */
 public class RpcServer {
     private int servicePort;
@@ -26,19 +25,17 @@ public class RpcServer {
     public void start() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(group).channel(NioServerSocketChannel.class)
-                .localAddress(servicePort)
+        bootstrap.group(group).channel(NioServerSocketChannel.class).localAddress(servicePort)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
+                        pipeline.addLast(
+                                new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
                         pipeline.addLast(new ServiceHandler());
                         pipeline.addLast(new ObjectEncoder());
                     }
-                })
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+                }).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
         try {
             ChannelFuture future = bootstrap.bind().sync();

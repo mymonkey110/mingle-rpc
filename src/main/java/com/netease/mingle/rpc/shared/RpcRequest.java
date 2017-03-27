@@ -1,5 +1,6 @@
 package com.netease.mingle.rpc.shared;
 
+import com.netease.mingle.rpc.shared.exception.RpcException;
 import com.netease.mingle.rpc.shared.util.UUIDUtil;
 
 import java.io.Serializable;
@@ -7,8 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
- * Rpc Request
- * Created by Michael Jiang on 2016/12/4.
+ * Rpc Request Created by Michael Jiang on 2016/12/4.
  */
 public class RpcRequest implements Serializable {
     private static final long serialVersionUID = 2055789247919025856L;
@@ -46,6 +46,18 @@ public class RpcRequest implements Serializable {
         return this;
     }
 
+    public RpcResponse newNormalResponse(Object normalReturn) {
+        return RpcResponse.normalReturn(requestId, normalReturn);
+    }
+
+    public RpcResponse newUserThrowableResponse(Throwable userThrowable) {
+        return RpcResponse.userThrowException(requestId, userThrowable);
+    }
+
+    public RpcResponse newRpcExceptionResponse(RpcException rpcException) {
+        return RpcResponse.innerException(requestId, rpcException);
+    }
+
     public String getRequestId() {
         return requestId;
     }
@@ -68,12 +80,8 @@ public class RpcRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "RpcRequest{" +
-                "requestId='" + requestId + '\'' +
-                ", className='" + className + '\'' +
-                ", methodName='" + methodName + '\'' +
-                ", parameterTypes=" + Arrays.toString(parameterTypes) +
-                ", parameters=" + Arrays.toString(parameters) +
-                '}';
+        return "RpcRequest{" + "requestId='" + requestId + '\'' + ", className='" + className + '\'' + ", methodName='"
+                + methodName + '\'' + ", parameterTypes=" + Arrays.toString(parameterTypes) + ", parameters="
+                + Arrays.toString(parameters) + '}';
     }
 }
