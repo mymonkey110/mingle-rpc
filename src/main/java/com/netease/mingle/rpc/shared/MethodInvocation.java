@@ -5,11 +5,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
- * Method Invocation Descriptor
- * Created by Michael Jiang on 16-12-2.
+ * Method Invocation Descriptor Created by Michael Jiang on 16-12-2.
  */
 public class MethodInvocation implements Serializable {
-    private final static String version = "1.0";
+    private static final String VERSION = "1.0";
     private static final long serialVersionUID = -8292303732547500854L;
 
     private String className;
@@ -39,7 +38,7 @@ public class MethodInvocation implements Serializable {
     }
 
     public static String getVersion() {
-        return version;
+        return VERSION;
     }
 
     public String getClassName() {
@@ -59,23 +58,26 @@ public class MethodInvocation implements Serializable {
     }
 
     public boolean isSameMethod(MethodInvocation other) {
-        return other != null
-                && this.className.equals(other.className)
-                && this.methodName.equals(other.methodName)
+        return other != null && this.className.equals(other.className) && this.methodName.equals(other.methodName)
                 && Arrays.equals(this.parameterTypes, other.parameterTypes);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         MethodInvocation that = (MethodInvocation) o;
 
-        if (className != null ? !className.equals(that.className) : that.className != null) return false;
-        if (methodName != null ? !methodName.equals(that.methodName) : that.methodName != null) return false;
+        if (className != null ? !className.equals(that.className) : that.className != null)
+            return false;
+        if (methodName != null ? !methodName.equals(that.methodName) : that.methodName != null)
+            return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(parameterTypes, that.parameterTypes)) return false;
+        if (!Arrays.equals(parameterTypes, that.parameterTypes))
+            return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         return Arrays.equals(parameters, that.parameters);
     }

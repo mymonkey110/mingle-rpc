@@ -1,28 +1,20 @@
 package com.netease.mingle.rpc.server;
 
-import com.netease.mingle.rpc.shared.MethodInvocation;
+import com.netease.mingle.rpc.shared.ServiceCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Rpc Service Register
- * Created by Michael Jiang on 2016/11/27.
+ * Rpc Service Register Created by Michael Jiang on 2016/11/27.
  */
 public class ServiceRegister {
-    private Map<Class,Object> serviceInstanceMap;
-    private Map<String, Class> resolvedClazzMap;
-
-    private ServiceRegister() {
-        this.serviceInstanceMap = new ConcurrentHashMap<>(8);
-        this.resolvedClazzMap = new ConcurrentHashMap<>(8);
-    }
-
+    private static Map<Class, Object> serviceInstanceMap = new ConcurrentHashMap<>(8);
+    private static Map<String, Class> resolvedClazzMap = new ConcurrentHashMap<>(8);
     private static ServiceRegister instance = new ServiceRegister();
+    private static Logger logger = LoggerFactory.getLogger(ServiceRegister.class);
 
     public static ServiceRegister getInstance() {
         return instance;
@@ -51,33 +43,39 @@ public class ServiceRegister {
         return serviceInstanceMap.get(clazz);
     }
 
-    public Set<Class> getServiceClass() {
-        return serviceInstanceMap.keySet();
-    }
+    @SuppressWarnings("unchecked")
+    public boolean isServiceRegistered(ServiceCheck serviceCheck) {
+        String className = serviceCheck.getClassName();
+        String methodName = serviceCheck.getMethodName();
+        Class<?>[] parameterTypes = serviceCheck.getParameterTypes();
 
-    public boolean isServiceRegistered(String className) {
         if (resolvedClazzMap.containsKey(className)) {
-            return true;
+            Class clazz = resolvedClazzMap.get(className);
+            try {
+                clazz.getDeclaredMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException e) {
+                logger.debug("class:{} has no method:{} with parameter types:{}.", className, methodName,
+                        parameterTypes);
+                return false;
+            }
+        } else {
+            try {
+                Class clazz = Class.forName(className);
+                if (serviceInstanceMap.containsKey(clazz)) {
+                    resolvedClazzMap.put(className, clazz);
+                }
+                clazz.getDeclaredMethod(methodName, parameterTypes);
+            } catch (ClassNotFoundException e) {
+                logger.debug("not found class:{}.", className);
+                return false;
+            } catch (NoSuchMethodException e) {
+                logger.debug("class:{} has no method:{} with parameter types:{}.", className, methodName,
+                        parameterTypes);
+                return false;
+            }
         }
-        try {
-            Class clazz = Class.forName(className);
-            resolvedClazzMap.put(className, clazz);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+
+        return true;
     }
 
-    private List<MethodInvocation> resolveServiceInterface(Class<?> serviceInterface) {
-        if (!serviceInterface.isInterface()) {
-            throw new IllegalArgumentException("register service " + serviceInterface.getName() + " is not interface");
-        }
-        Method[] methods = serviceInterface.getDeclaredMethods();
-        List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
-        for (Method method : methods) {
-            MethodInvocation methodInvocation = MethodInvocation.from(method);
-            methodInvocations.add(methodInvocation);
-        }
-        return methodInvocations;
-    }
 }
