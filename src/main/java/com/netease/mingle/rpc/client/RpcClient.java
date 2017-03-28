@@ -12,6 +12,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,11 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Rpc Client Created by Michael Jiang on 2016/12/2.
  */
 public class RpcClient {
-    private static Logger logger = LoggerFactory.getLogger(RpcClient.class.toString());
+    private static Logger logger = LoggerFactory.getLogger(RpcClient.class);
     private static RpcClient instance = new RpcClient();
     private Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup());
     private Map<Class, ServiceAddress> serviceAddressMap = new ConcurrentHashMap<>(8);
     private Map<ServiceAddress, Channel> serviceAddressChannelMap = new ConcurrentHashMap<>(8);
+    private List<Class> needStartUpCheckService = new ArrayList<>();
 
     private RpcClient() {
     }
@@ -55,6 +58,9 @@ public class RpcClient {
         if (!serviceAddressMap.containsKey(serviceInterface)) {
             ServiceAddress serviceAddress = ServiceAddress.parse(address);
             serviceAddressMap.put(serviceInterface, serviceAddress);
+            if (startUpCheck) {
+                needStartUpCheckService.add(serviceInterface);
+            }
             return (T) new RpcProxy(serviceInterface, serviceAddress).getProxyObject();
         } else {
             throw new IllegalArgumentException("already refer service:" + serviceInterface.getName());
@@ -84,6 +90,11 @@ public class RpcClient {
                             }
                         }
                     });
+
+        }
+
+        //TODO: add send check
+        if (!needStartUpCheckService.isEmpty()) {
 
         }
     }

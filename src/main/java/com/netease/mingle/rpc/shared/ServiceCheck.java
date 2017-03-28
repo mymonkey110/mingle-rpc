@@ -32,6 +32,17 @@ public class ServiceCheck implements Serializable {
         return new ServiceCheck(className, methodName, parameterTypes);
     }
 
+    public static ServiceCheck fromRpcRequest(RpcRequest rpcRequest) {
+        if (rpcRequest == null) {
+            throw new IllegalArgumentException("rpc request is null");
+        }
+
+        String className = rpcRequest.getClassName();
+        String methodName = rpcRequest.getMethodName();
+        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
+        return new ServiceCheck(className, methodName, parameterTypes);
+    }
+
     public String getClassName() {
         return className;
     }
@@ -44,7 +55,7 @@ public class ServiceCheck implements Serializable {
         return parameterTypes;
     }
 
-    public Boolean getExist() {
+    public Boolean isExist() {
         return exist;
     }
 

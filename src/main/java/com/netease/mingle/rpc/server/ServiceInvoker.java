@@ -1,16 +1,18 @@
 package com.netease.mingle.rpc.server;
 
 import com.netease.mingle.rpc.shared.RpcRequest;
+import com.netease.mingle.rpc.shared.ServiceCheck;
 import com.netease.mingle.rpc.shared.exception.MethodNotFoundException;
 import com.netease.mingle.rpc.shared.exception.SystemException;
 
 import java.lang.reflect.Method;
 
 /**
- * Service Invoker
- * Created by Michael Jiang on 2016/12/3.
+ * Service Invoker Created by Michael Jiang on 2016/12/3.
  */
 public class ServiceInvoker {
+    private static ServiceRegister serviceRegister = ServiceRegister.getInstance();
+
     private Class clazz;
     private String methodName;
     private Object instance;
@@ -18,8 +20,9 @@ public class ServiceInvoker {
     private Object[] parameters;
 
     private ServiceInvoker(RpcRequest rpcRequest) {
-        ServiceRegister serviceRegister = ServiceRegister.getInstance();
-        if (serviceRegister.isServiceRegistered(rpcRequest.getClassName())) {
+        ServiceCheck serviceCheck = ServiceCheck.fromRpcRequest(rpcRequest);
+        // TODO: Optimize Point, Accelerate Check
+        if (serviceRegister.isServiceRegistered(serviceCheck)) {
             this.clazz = serviceRegister.getRegisteredClass(rpcRequest.getClassName());
             this.methodName = rpcRequest.getMethodName();
             this.instance = serviceRegister.getServiceInstance(clazz);

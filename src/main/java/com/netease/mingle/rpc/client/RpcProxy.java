@@ -42,7 +42,7 @@ class RpcProxy<T> implements InvocationHandler {
         }
 
         RpcRequest rpcRequest = RpcRequest.from(method).addParameters(args);
-        logger.info("sending rpc request:{}.", rpcRequest);
+        logger.debug("sending rpc request:{}.", rpcRequest);
 
         Channel channel = RpcClient.getInstance().getServiceAddressBindChannel(address);
         ClientHandler clientHandler = channel.pipeline().get(ClientHandler.class);
