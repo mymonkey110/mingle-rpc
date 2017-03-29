@@ -3,8 +3,8 @@ package com.netease.mingle.rpc.client;
 import java.net.InetSocketAddress;
 
 /**
- * Mingle Service Address, like InetAddress
- * Created by Michael Jiang on 2016/12/3.
+ * Mingle Service Address, like InetAddress Created by Michael Jiang on
+ * 2016/12/3.
  */
 public class ServiceAddress {
     private String ip;
@@ -39,9 +39,6 @@ public class ServiceAddress {
 
     @Override
     public String toString() {
-        return "ServiceAddress{" +
-                "ip='" + ip + '\'' +
-                ", port=" + port +
-                '}';
+        return "ServiceAddress{" + "ip='" + ip + '\'' + ", port=" + port + '}';
     }
 }

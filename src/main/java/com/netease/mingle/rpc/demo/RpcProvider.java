@@ -11,7 +11,7 @@ public class RpcProvider {
     public static void main(String[] args) {
         ServiceRegister serviceRegister = ServiceRegister.getInstance();
         HelloService helloService = new HelloServiceImpl();
-        serviceRegister.register(HelloService.class,helloService);
+        serviceRegister.export(HelloService.class,helloService);
         RpcServer rpcServer = new RpcServer(9999);
         rpcServer.start();
     }

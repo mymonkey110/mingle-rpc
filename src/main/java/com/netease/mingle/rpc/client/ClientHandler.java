@@ -36,6 +36,8 @@ public class ClientHandler extends SimpleChannelInboundHandler {
             if (!serviceCheck.isExist()) {
                 throw new IllegalStateException(
                         "service:" + serviceCheck.getClassName() + " not exist in remote server");
+            } else {
+                logger.info("service:{} check completed.", serviceCheck.getClassName());
             }
         } else {
             logger.warn("recv msg is valid message format");
@@ -45,7 +47,7 @@ public class ClientHandler extends SimpleChannelInboundHandler {
     public ServiceCallContext sendRequest(RpcRequest request) {
         ServiceCallContext serviceCallContext = new ServiceCallContext(request);
         if (!callContextMap.containsKey(request.getRequestId())) {
-            logger.info("register request:{}.", request);
+            logger.info("export request:{}.", request);
             callContextMap.put(request.getRequestId(), serviceCallContext);
         } else {
             logger.warn("request id already recorded");

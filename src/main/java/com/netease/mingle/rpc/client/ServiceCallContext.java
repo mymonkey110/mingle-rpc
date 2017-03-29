@@ -11,8 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Service Call Context
- * Created by Michael Jiang on 2016/12/4.
+ * Service Call Context Created by Michael Jiang on 2016/12/4.
  */
 public class ServiceCallContext {
     private RpcRequest request;

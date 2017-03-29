@@ -11,14 +11,10 @@ public class ServiceCheck implements Serializable {
     private static final long serialVersionUID = -1535117010242742608L;
 
     private String className;
-    private String methodName;
-    private Class<?>[] parameterTypes;
     private Boolean exist;
 
-    private ServiceCheck(String className, String methodName, Class<?>[] parameterTypes) {
+    private ServiceCheck(String className) {
         this.className = className;
-        this.methodName = methodName;
-        this.parameterTypes = parameterTypes;
         this.exist = false;
     }
 
@@ -27,9 +23,15 @@ public class ServiceCheck implements Serializable {
             throw new IllegalArgumentException("method is null");
         }
         String className = method.getClass().getName();
-        String methodName = method.getName();
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        return new ServiceCheck(className, methodName, parameterTypes);
+        return new ServiceCheck(className);
+    }
+
+    public static ServiceCheck fromClass(Class clazz) {
+        if (clazz == null) {
+            throw new IllegalArgumentException("class is null");
+        }
+        String className = clazz.getName();
+        return new ServiceCheck(className);
     }
 
     public static ServiceCheck fromRpcRequest(RpcRequest rpcRequest) {
@@ -38,21 +40,11 @@ public class ServiceCheck implements Serializable {
         }
 
         String className = rpcRequest.getClassName();
-        String methodName = rpcRequest.getMethodName();
-        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
-        return new ServiceCheck(className, methodName, parameterTypes);
+        return new ServiceCheck(className);
     }
 
     public String getClassName() {
         return className;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public Class<?>[] getParameterTypes() {
-        return parameterTypes;
     }
 
     public Boolean isExist() {
@@ -65,7 +57,6 @@ public class ServiceCheck implements Serializable {
 
     @Override
     public String toString() {
-        return "ServiceCheck{" + "className='" + className + '\'' + ", methodName='" + methodName + '\''
-                + ", parameterTypes=" + Arrays.toString(parameterTypes) + ", exist=" + exist + '}';
+        return "ServiceCheck{" + "className='" + className + '\'' + ", exist=" + exist + '}';
     }
 }

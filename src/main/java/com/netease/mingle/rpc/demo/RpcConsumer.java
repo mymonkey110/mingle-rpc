@@ -13,12 +13,12 @@ public class RpcConsumer {
         rpcClient.init();
         String replay = helloService.sayHi("michael");
         System.out.println(replay);
-
+/*
         try {
             helloService.exceptionTest();
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
 
     }
 }

@@ -20,17 +20,27 @@ public class ServiceRegister {
         return instance;
     }
 
-    public <T> void register(Class<T> serviceClass, T serviceInstance) {
+    /**
+     * 服务接口导出
+     *
+     * @param serviceClass
+     *            服务类
+     * @param serviceInstance
+     *            服务实例
+     * @param <T>
+     *            服务类型
+     */
+    public <T> void export(Class<T> serviceClass, T serviceInstance) {
         if (!serviceClass.isInterface()) {
             throw new IllegalArgumentException("mingle only support interface now");
         }
         if (serviceInstanceMap.containsKey(serviceClass)) {
-            throw new IllegalStateException("already register class:" + serviceClass.getName());
+            throw new IllegalStateException("already export class:" + serviceClass.getName());
         }
         serviceInstanceMap.put(serviceClass, serviceInstance);
     }
 
-    public Class getRegisteredClass(String className) {
+    Class getRegisteredClass(String className) {
         for (Class clazz : serviceInstanceMap.keySet()) {
             if (clazz.getName().equals(className)) {
                 return clazz;
@@ -39,43 +49,28 @@ public class ServiceRegister {
         throw new RuntimeException("not found registered class: " + className);
     }
 
-    public Object getServiceInstance(Class clazz) {
+    Object getServiceInstance(Class clazz) {
         return serviceInstanceMap.get(clazz);
     }
 
     @SuppressWarnings("unchecked")
-    public boolean isServiceRegistered(ServiceCheck serviceCheck) {
+    boolean isServiceRegistered(ServiceCheck serviceCheck) {
         String className = serviceCheck.getClassName();
-        String methodName = serviceCheck.getMethodName();
-        Class<?>[] parameterTypes = serviceCheck.getParameterTypes();
 
         if (resolvedClazzMap.containsKey(className)) {
-            Class clazz = resolvedClazzMap.get(className);
-            try {
-                clazz.getDeclaredMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException e) {
-                logger.debug("class:{} has no method:{} with parameter types:{}.", className, methodName,
-                        parameterTypes);
-                return false;
-            }
+            return true;
         } else {
             try {
                 Class clazz = Class.forName(className);
                 if (serviceInstanceMap.containsKey(clazz)) {
                     resolvedClazzMap.put(className, clazz);
                 }
-                clazz.getDeclaredMethod(methodName, parameterTypes);
+                return true;
             } catch (ClassNotFoundException e) {
                 logger.debug("not found class:{}.", className);
                 return false;
-            } catch (NoSuchMethodException e) {
-                logger.debug("class:{} has no method:{} with parameter types:{}.", className, methodName,
-                        parameterTypes);
-                return false;
             }
         }
-
-        return true;
     }
 
 }

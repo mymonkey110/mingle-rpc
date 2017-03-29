@@ -34,10 +34,10 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
             ServiceCheck serviceCheck = (ServiceCheck) msg;
             boolean exist = serviceRegister.isServiceRegistered(serviceCheck);
             serviceCheck.setExist(exist);
-            ctx.writeAndFlush(serviceCheck);
+            ctx.channel().writeAndFlush(serviceCheck);
         } else {
             logger.warn("rpc call protocol not qualified");
-            ctx.writeAndFlush(new SystemException());
+            ctx.channel().writeAndFlush(new SystemException());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.netease.mingle.rpc.client;
 
 import com.google.common.collect.Sets;
+import com.netease.mingle.rpc.shared.ServiceCheck;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -85,16 +86,20 @@ public class RpcClient {
                             if (future.isSuccess()) {
                                 logger.info("mingle client connected to {}.", serviceAddress);
                                 serviceAddressChannelMap.put(serviceAddress, future.channel());
+
+                                if (!needStartUpCheckService.isEmpty()) {
+                                    for (Class needCheckService : needStartUpCheckService) {
+                                        ServiceAddress serviceAddress = serviceAddressMap.get(needCheckService);
+                                        Channel channel = serviceAddressChannelMap.get(serviceAddress);
+                                        ServiceCheck serviceCheck = ServiceCheck.fromClass(needCheckService);
+                                        channel.writeAndFlush(serviceCheck);
+                                    }
+                                }
                             } else {
                                 logger.error("mingle client connected to {} failed.", serviceAddress);
                             }
                         }
                     });
-
-        }
-
-        //TODO: add send check
-        if (!needStartUpCheckService.isEmpty()) {
 
         }
     }
