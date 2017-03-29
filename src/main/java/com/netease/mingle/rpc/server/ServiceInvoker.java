@@ -4,7 +4,10 @@ import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.ServiceCheck;
 import com.netease.mingle.rpc.shared.exception.MethodNotFoundException;
 import com.netease.mingle.rpc.shared.exception.SystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -12,6 +15,7 @@ import java.lang.reflect.Method;
  */
 public class ServiceInvoker {
     private static ServiceRegister serviceRegister = ServiceRegister.getInstance();
+    private static Logger logger = LoggerFactory.getLogger(ServiceInvoker.class);
 
     private Class clazz;
     private String methodName;
@@ -33,20 +37,18 @@ public class ServiceInvoker {
         }
     }
 
-    public static ServiceInvoker getServiceInvoker(RpcRequest rpcRequest) {
+    static ServiceInvoker getServiceInvoker(RpcRequest rpcRequest) {
         return new ServiceInvoker(rpcRequest);
     }
 
     @SuppressWarnings("unchecked")
-    public Object invoke() {
+    Object invoke() {
         try {
             Method method = clazz.getMethod(methodName, parameterTypes);
             return method.invoke(instance, parameters);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            return new MethodNotFoundException();
-        } catch (Exception e) {
-            return new SystemException();
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            logger.error("invoke method exception:{}.", e.getMessage(), e);
+            return e.getCause();
         }
     }
 }

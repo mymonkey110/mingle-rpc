@@ -46,6 +46,16 @@ public class RpcRequest implements Serializable {
         return this;
     }
 
+    public RpcResponse fromReturn(Object returnValue) {
+        if (returnValue instanceof RpcException) {
+            return newRpcExceptionResponse((RpcException) returnValue);
+        } else if (returnValue instanceof Exception) {
+            return newUserThrowableResponse((Throwable) returnValue);
+        } else {
+            return newNormalResponse(returnValue);
+        }
+    }
+
     public RpcResponse newNormalResponse(Object normalReturn) {
         return RpcResponse.normalReturn(requestId, normalReturn);
     }

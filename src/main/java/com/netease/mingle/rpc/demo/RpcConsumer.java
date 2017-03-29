@@ -11,6 +11,14 @@ public class RpcConsumer {
         RpcClient rpcClient = RpcClient.getInstance();
         HelloService helloService = rpcClient.refer(HelloService.class, "localhost:9999", true);
         rpcClient.init();
-        System.out.println(helloService.sayHi("michael"));
+        String replay = helloService.sayHi("michael");
+        System.out.println(replay);
+
+        try {
+            helloService.exceptionTest();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }

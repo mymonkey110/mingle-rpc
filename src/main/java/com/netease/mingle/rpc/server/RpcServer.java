@@ -11,12 +11,15 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RPC Server Created by Michael Jiang on 2016/11/27.
  */
 public class RpcServer {
     private static final int BACKLOG_NUM = 128;
+    private static Logger logger = LoggerFactory.getLogger(RpcServer.class);
     private int servicePort;
 
     public RpcServer(int servicePort) {
@@ -40,10 +43,10 @@ public class RpcServer {
 
         try {
             ChannelFuture future = bootstrap.bind().sync();
-            System.out.println("Rpc Server is started and listening on port:" + servicePort);
+            logger.info("Rpc Server is started and listening on port:{}.", servicePort);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } finally {
             group.shutdownGracefully();
         }
