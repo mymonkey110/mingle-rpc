@@ -2,8 +2,6 @@ package com.netease.mingle.rpc.server;
 
 import com.netease.mingle.rpc.shared.RpcRequest;
 import com.netease.mingle.rpc.shared.ServiceCheck;
-import com.netease.mingle.rpc.shared.exception.MethodNotFoundException;
-import com.netease.mingle.rpc.shared.exception.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
