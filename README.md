@@ -1,3 +1,3 @@
 # mingle-rpc
 
-A lightweight rpc framework for Java
+A lightweight rpc library for Java
