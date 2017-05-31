@@ -11,7 +11,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * Rpc Proxy Created by jiangwenkang on 2017/1/4.
+ * Rpc Proxy
+ *
+ * Created by jiangwenkang on 2017/1/4.
  */
 class RpcProxy<T> implements InvocationHandler {
     private static Logger logger = LoggerFactory.getLogger(RpcProxy.class);

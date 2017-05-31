@@ -9,9 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Service Invoker Created by Michael Jiang on 2016/12/3.
+ * Service Invoker
+ *
+ * Created by Michael Jiang on 2016/12/3.
  */
-public class ServiceInvoker {
+class ServiceInvoker {
     private static ServiceRegister serviceRegister = ServiceRegister.getInstance();
     private static Logger logger = LoggerFactory.getLogger(ServiceInvoker.class);
 

@@ -80,31 +80,28 @@ public class RpcClient {
                     pipeline.addLast(new ObjectEncoder());
                 }
             }).connect(serviceAddress.toInetSocketAddress()).syncUninterruptibly()
-                    .addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture future) throws Exception {
-                            if (future.isSuccess()) {
-                                logger.info("mingle client connected to {}.", serviceAddress);
-                                serviceAddressChannelMap.put(serviceAddress, future.channel());
+                    .addListener((ChannelFutureListener) future -> {
+                        if (future.isSuccess()) {
+                            logger.info("mingle client connected to {}.", serviceAddress);
+                            serviceAddressChannelMap.put(serviceAddress, future.channel());
 
-                                if (!needStartUpCheckService.isEmpty()) {
-                                    for (Class needCheckService : needStartUpCheckService) {
-                                        ServiceAddress serviceAddress = serviceAddressMap.get(needCheckService);
-                                        Channel channel = serviceAddressChannelMap.get(serviceAddress);
-                                        ServiceCheck serviceCheck = ServiceCheck.fromClass(needCheckService);
-                                        channel.writeAndFlush(serviceCheck);
-                                    }
+                            if (!needStartUpCheckService.isEmpty()) {
+                                for (Class needCheckService : needStartUpCheckService) {
+                                    ServiceAddress serviceAddress1 = serviceAddressMap.get(needCheckService);
+                                    Channel channel = serviceAddressChannelMap.get(serviceAddress1);
+                                    ServiceCheck serviceCheck = ServiceCheck.fromClass(needCheckService);
+                                    channel.writeAndFlush(serviceCheck);
                                 }
-                            } else {
-                                logger.error("mingle client connected to {} failed.", serviceAddress);
                             }
+                        } else {
+                            logger.error("mingle client connected to {} failed.", serviceAddress);
                         }
                     });
 
         }
     }
 
-    public Channel getServiceAddressBindChannel(ServiceAddress serviceAddress) {
+    Channel getServiceAddressBindChannel(ServiceAddress serviceAddress) {
         return serviceAddressChannelMap.get(serviceAddress);
     }
 

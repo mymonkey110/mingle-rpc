@@ -15,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * RPC Server Created by Michael Jiang on 2016/11/27.
+ * RPC Server
+ *
+ * Created by Michael Jiang on 2016/11/27.
  */
 public class RpcServer {
     private static final int BACKLOG_NUM = 128;

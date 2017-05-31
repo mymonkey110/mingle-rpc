@@ -44,7 +44,7 @@ public class ClientHandler extends SimpleChannelInboundHandler {
         }
     }
 
-    public ServiceCallContext sendRequest(RpcRequest request) {
+    ServiceCallContext sendRequest(RpcRequest request) {
         ServiceCallContext serviceCallContext = new ServiceCallContext(request);
         if (!callContextMap.containsKey(request.getRequestId())) {
             logger.info("export request:{}.", request);
